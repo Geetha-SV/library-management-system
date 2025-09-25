@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Library Dashboard</title>
+<style>
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Arial', sans-serif; }
+    body { background:#f0f7f4; min-height:100vh; }
+
+    header {
+        background:#4CAF50;
+        color:#fff;
+        padding:20px 40px;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        box-shadow:0 4px 8px rgba(0,0,0,0.1);
+    }
+    header h1 { font-size:28px; }
+    header a.btn-logout {
+        background:#388E3C;
+        color:#fff;
+        padding:8px 16px;
+        text-decoration:none;
+        border-radius:6px;
+        transition:0.3s;
+    }
+    header a.btn-logout:hover { background:#2E7D32; }
+
+    .container { width:90%; max-width:1200px; margin:30px auto; }
+
+    .flash {
+        padding:10px;
+        margin-bottom:15px;
+        border-radius:8px;
+        font-size:14px;
+    }
+    .flash.success { background:#d4edda; color:#155724; }
+    .flash.danger { background:#f8d7da; color:#721c24; }
+    .flash.info { background:#d1ecf1; color:#0c5460; }
+
+    .actions {
+        display:flex;
+        flex-wrap:wrap;
+        gap:15px;
+        margin-bottom:20px;
+    }
+    .actions a {
+        background:#4CAF50;
+        color:#fff;
+        padding:10px 20px;
+        border-radius:8px;
+        text-decoration:none;
+        transition:0.3s;
+    }
+    .actions a:hover { background:#388E3C; }
+
+    .search-form { display:flex; margin-bottom:20px; }
+    .search-form input {
+        flex:1;
+        padding:10px;
+        border-radius:8px 0 0 8px;
+        border:1px solid #4CAF50;
+        outline:none;
+        box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .search-form button {
+        padding:10px 20px;
+        border:none;
+        background:#4CAF50;
+        color:#fff;
+        border-radius:0 8px 8px 0;
+        cursor:pointer;
+        transition:0.3s;
+    }
+    .search-form button:hover { background:#388E3C; }
+
+    h2 { color:#333; margin-bottom:15px; }
+
+    table {
+        width:100%;
+        border-collapse:collapse;
+        margin-bottom:40px;
+        border-radius:12px;
+        overflow:hidden;
+        box-shadow:0 4px 10px rgba(0,0,0,0.1);
+        background:#fff;
+    }
+    table th, table td { padding:12px 15px; text-align:left; font-size:15px; }
+    table th { background:#4CAF50; color:#fff; }
+    table tr:nth-child(even) { background:#E8F5E9; }
+    table tr:nth-child(odd) { background:#fff; }
+    table tr:hover { background:#C8E6C9; transition:0.3s; }
+
+    a.edit-btn {
+        background:#2196F3;
+        color:#fff;
+        padding:6px 12px;
+        border-radius:6px;
+        text-decoration:none;
+        margin-right:5px;
+        transition:0.3s;
+        font-size:13px;
+    }
+    a.edit-btn:hover { background:#1976D2; }
+
+    button.delete-btn {
+        background:#f44336;
+        color:#fff;
+        padding:6px 12px;
+        border:none;
+        border-radius:6px;
+        cursor:pointer;
+        transition:0.3s;
+        font-size:13px;
+    }
+    button.delete-btn:hover { background:#c0392b; }
+
+    @media (max-width:768px) {
+        header h1 { font-size:22px; }
+    }
+</style>
+</head>
+<body>
+
+<header>
+    <h1>Library Dashboard</h1>
+    <a href="{{ url_for('logout') }}" class="btn-logout">Logout</a>
+</header>
+
+<div class="container">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="search-form">
+        <form method="get">
+            <input type="text" name="q" placeholder="Search books..." value="{{ request.args.get('q', '') }}">
+            <button type="submit">Search</button>
+        </form>
+    </div>
+
+    <div class="actions">
+        <a href="{{ url_for('add_book') }}">Add Book</a>
+        <a href="{{ url_for('issue_book') }}">Issue Book</a>
+        <a href="{{ url_for('history') }}">History</a>
+    </div>
+
+    <h2>Available Books</h2>
+    <table>
+        <tr>
+            <th>Title</th><th>Author</th><th>ISBN</th><th>Quantity</th><th>Actions</th>
+        </tr>
+        {% for book in books %}
+        <tr>
+            <td>{{ book.title }}</td>
+            <td>{{ book.author }}</td>
+            <td>{{ book.isbn }}</td>
+            <td>{{ book.quantity }}</td>
+            <td>
+                <a href="{{ url_for('edit_book', book_id=book.id) }}" class="edit-btn">Edit</a>
+                <form action="{{ url_for('delete_book', book_id=book.id) }}" method="POST" style="display:inline;">
+                    <button type="submit" class="delete-btn">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h2>Issued Books</h2>
+    <table>
+        <tr>
+            <th>Book</th><th>Borrower</th><th>Issue Date</th><th>Return</th>
+        </tr>
+        {% for borrow in borrows %}
+        <tr>
+            <td>{{ borrow.book.title }}</td>
+            <td>{{ borrow.borrower }}</td>
+            <td>{{ borrow.issue_date }}</td>
+            <td>
+                <form action="{{ url_for('return_book', borrow_id=borrow.id) }}" method="POST">
+                    <button type="submit" class="delete-btn">Return</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+</div>
+</body>
+</html>

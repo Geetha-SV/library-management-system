@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Borrow History</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: #f4f6f8;
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        h2 {
+            color: #4CAF50;
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 28px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            overflow: hidden;
+            border-radius: 12px;
+        }
+
+        table th, table td {
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        table th {
+            background: #4CAF50;
+            color: #fff;
+            font-size: 16px;
+        }
+
+        table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        table tr:hover {
+            background: #e0d4eb;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #4CAF50;;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            background: #f0e5f6;
+            transition: 0.3s;
+        }
+
+        .back-link:hover {
+            background: #C06C84;
+            color: #fff;
+        }
+
+        .flash {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .flash.success { background: #d4edda; color: #155724; }
+        .flash.danger { background: #f8d7da; color: #721c24; }
+        .flash.info { background: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Borrow History</h2>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <table>
+        <tr>
+            <th>Book</th>
+            <th>Borrower</th>
+            <th>Issue Date</th>
+            <th>Return Date</th>
+        </tr>
+        {% for entry in history_entries %}
+        <tr>
+            <td>{{ entry.book.title }}</td>
+            <td>{{ entry.borrower }}</td>
+            <td>{{ entry.issue_date }}</td>
+            <td>{{ entry.return_date or 'Not Returned' }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <a href="{{ url_for('index') }}" class="back-link">← Back to Dashboard</a>
+</div>
+
+</body>
+</html>
