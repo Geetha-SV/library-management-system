@@ -62,4 +62,4 @@ library-management-system/
 
 ## 📸 Screenshots
 ### Dashboard
-![Dashboard]("C:\Users\POORANI\OneDrive\Pictures\Screenshots\Screenshot 2025-09-25 213202.png")
+![Dashboard](dashbord.png)
