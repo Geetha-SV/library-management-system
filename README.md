@@ -62,4 +62,5 @@ library-management-system/
 
 ## 📸 Screenshots
 ### Dashboard
-![Dashboard](dashbord.png)
+![dashboard](https://github.com/Geetha-SV/library-management-system/assets/1234567/abcdef123.png)
+
